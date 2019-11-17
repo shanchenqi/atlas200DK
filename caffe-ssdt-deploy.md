@@ -5,6 +5,9 @@
 在mindstudio上新建一个object-detection的工程
 1、打开mindstudio，选择File->New->New Project
 
+![new_project](https://github.com/shanchenqi/atlas200DK/blob/master/new_project.png)
+
+
 ## 自动部署
 首先，通过mind_camera_datsets模块从摄像头获取YUV420SP格式的数据，接下来通过object_detection_inference.py完成图像的预处理和推理，通过object_dectection_post_process.py处理推理结果，并将推理结果发送到presenter server。
 * 获取源码
