@@ -22,27 +22,27 @@ A.使用ModelArts的模型转换功能，将om模型从obs下载到本地后，�
 B.将modelarts上训练得到的caffe模型转换为mindstudio支持的om模型
 1. 选择Tool->Convert Model，进入模型转换界面
 
-     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/convert_model.png)
+     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/picture/convert_model.png)
 
 2. 模型转换
 
      Model Type选择 Caffe;
      Model File选择训练生成的模型文件，例如：deploy.txt
      Weight File选择训练生成的权重文件，例如：VGG_VOC0712_SSD_300x300_iter_50.caffemodel
-    ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/convert_model2.png)
+    ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/picture/convert_model2.png)
 
 3. 单击OK开始模型转换。
    模型在转换的时候，会有报错。报错信息如下所示。
     
-     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/convert_model3.png)
+     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/picture/convert_model3.png)
 
    此时在DetectionOutput层的Suggestion中选择SSDDetectionOutput，并点击Retry，转换成功后如下图所示。
 
-     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/convert_model4.png)
+     ![convert_model](https://github.com/shanchenqi/atlas200DK/blob/master/picture/convert_model4.png)
    模型转换成功后，后缀为.om的Davinci模型存放地址为$HOME/tools/che/model-zoo/my-model/xxx。
 第三步、搭建流程
 通过双击新创建的后缀名为.mind的文件（例如object-detection.mind）即可打开Engine流程编排窗口，如图所示。
-     ![mind](https://github.com/shanchenqi/atlas200DK/blob/master/mind.png)
+     ![mind](https://github.com/shanchenqi/atlas200DK/blob/master/picture/mind.png)
 
 object-detection网络主要包含如下节点：一个数据集、一个模型、一个数据预处理、一个执行引擎以及一个图片后处理节点。流程编排具体操作步骤如下：
 1. 添加模型。
