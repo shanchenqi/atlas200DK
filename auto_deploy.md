@@ -26,8 +26,10 @@ install.sh脚本执行的操作有：
 1.objectdetectionapp中的graph.config文件：
 在模型的部署过程中，包括三个engine，这里我们称之为引擎：摄像头获取图片的引擎Mind_camera_datasets，推理的前处理引擎object_detection_inference，推理的后处理引擎object_detection_post_process。在graph.config配置文件中，含有这三个引擎的信息:引擎的id，引擎的名称，引擎的配置信息等。graph.config配置文件中还包括将这三个引擎串联起来需要的两个链接信息（connects），含有输入输出节点的ID等信息。
 ![train](https://github.com/shanchenqi/atlas200DK/blob/master/picture/graphconfig.png)
+
 2.objectdetectionapp中的object_detection_inference.py:
 通过mind_camera_dataset.py文件将摄像头输入的视频文件转化为YUV格式的数据，后续将其送入推理引擎进行推理。
+
 3.objectdetectionapp中的object_detection_inference.py：
 Process函数是程序的入口，
 由于模型的输入是300×300,在这里首先对输入的图片数据进行resize的操作，使其符合模型的输入，在这里resize操作将图片处理的宽和高分别设为128和16的倍数，即384×304，使芯片发挥最佳性能。在模型的推理过程中，会通过aipp的操作直接处理resize后的图片，并不会造成图片的大小与模型的输入不相符的情况。
