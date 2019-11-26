@@ -104,6 +104,7 @@ Process函数是程序的入口，
 
             resizedImg = ImageData()
             #model resolution, not image resolution
+            #通过resolution存储模型的输入图片的size
             modeResolution = Resolution(kModelWidth, kModelHeight)
             ret = ResizeImage(resizedImg, srcImgParam, modeResolution, self.isAligned)
             if ret != HIAI_APP_OK:
@@ -122,7 +123,7 @@ ResizeImage()将图片进行resize，方法的定义如下
     if ret != HIAI_APP_OK:
         print("Resize image failed, return ", ret)
         return HIAI_APP_ERROR
-      ##AlignUP()将图片的宽高转为合适的大小。
+      ##AlignUP()将图片的宽高转为合适的大小，宽为128的倍数，高为16的倍数。
     if isAligned:
         destImage.width = AlignUP(modeResolutionC.width, kVpcWidthAlign)
         destImage.height = AlignUP(modeResolutionC.height, kVpcHeightAlign)
@@ -157,11 +158,13 @@ ResizeImage()将图片进行resize，方法的定义如下
      def ExcuteInference(self, images):
         result = []
         for i in range(0, len(images)):
+        #将YUV格式的数据转化为narray
             nArray = Yuv2Array(images[i])
             ssd = {"name": "face_detection", "path": self.modelPath}
+        #将narray转化为tensor作为模型的输入   
             nntensor = hiai.NNTensor(nArray)
             tensorList = hiai.NNTensorList(nntensor)
-            
+            #self.first==True，此时的推理开启aipp完成。
             if self.first == True:
                 
                 self.graph = hiai.Graph(hiai.GraphConfig(graph_id=2001))
@@ -173,7 +176,7 @@ ResizeImage()将图片进行resize，方法的定义如下
                     self.engine = hiai.Engine(self.engine_config)
                     self.ai_model_desc = hiai.AIModelDescription(name=ssd['name'], path=ssd['path'])
                     self.ai_config = hiai.AIConfig(hiai.AIConfigItem("Inference", "item_value_2"))
-                   # 在此处进行模型的推理分别定义输入，模型以及输出，完成推理
+                   # 在此处进行模型的推理分别定义输入，模型以及配置文件，完成推理
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
@@ -189,12 +192,13 @@ ResizeImage()将图片进行resize，方法的定义如下
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
+            在这里调用Graph.proc来获取推理得到的结果。
             resTensorList = self.graph.proc(input_nntensorlist=tensorList)
             result.append(resTensorList)
         return HIAI_APP_OK, result
 
 5.objectdetectionapp中的object_post_process.py:
-在后处理引擎中,首先判断是否有推理结果，如果没有推理结果，则调用HandleOoriginalImage方法直接将原始图片发送到服务中。如果有推理结果，则调用HandelResults方法处理推理结果。模型的推理结果是一个size为(200,1,1,7)的tensor，其中的200表示模型会将推理结果中的top200输出，7维数据中的result[1]表示推理结果的标签id，result[2]表示置信度，result[3-6]表示识别出物体的box的坐标，将这些结果处理好发送到presenter server中进行结果的展示。
+在后处理引擎中,首先判断是否有推理结果，如果没有推理结果，则调用HandleOriginalImage方法直接将原始图片发送到服务中。如果有推理结果，则调用HandelResults方法处理推理结果。模型的推理结果是一个size为(200,1,1,7)的tensor，其中的200表示模型会将推理结果中的top200输出，7维数据中的result[1]表示推理结果的标签id，result[2]表示置信度，result[3-6]表示识别出物体的box的坐标，将这些结果处理好发送到presenter server中进行结果的展示。
 
 
     def HandleResults(self, inferenceData):
