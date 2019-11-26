@@ -210,15 +210,15 @@ ResizeImage()将图片进行resize，方法的定义如下
             for j in range(0, inferenceResult.shape[1]):
                 for k in range(0, inferenceResult.shape[2]):
                     result = inferenceResult[i][j][k]
-                    attr = result[kAttributeIndex]
-                    score = result[kScoreIndex] #face detection confidence
+                    attr = result[kAttributeIndex]   #1
+                    score = result[kScoreIndex] #face detection confidence  #2
                     
                     #Get the face position in the image
                     one_result = DetectionResult()
-                    one_result.lt.x = result[kAnchorLeftTopAxisIndexX] * widthWithScale
-                    one_result.lt.y = result[kAnchorLeftTopAxisIndexY] * heightWithScale
-                    one_result.rb.x = result[kAnchorRightBottomAxisIndexX] * widthWithScale
-                    one_result.rb.y = result[kAnchorRightBottomAxisIndexY] * heightWithScale
+                    one_result.lt.x = result[kAnchorLeftTopAxisIndexX] * widthWithScale   #3
+                    one_result.lt.y = result[kAnchorLeftTopAxisIndexY] * heightWithScale   #4
+                    one_result.rb.x = result[kAnchorRightBottomAxisIndexX] * widthWithScale  #5
+                    one_result.rb.y = result[kAnchorRightBottomAxisIndexY] * heightWithScale  #6
                     if self.IsInvalidResults(attr, score, one_result.lt, one_result.rb):
                         continue
                     print("score=%f, lt.x=%d, lt.y=%d, rb.x=%d rb.y=%d",
