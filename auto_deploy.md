@@ -1,27 +1,7 @@
-## 自动部署
-首先，通过mind_camera_datsets模块从摄像头获取YUV420SP格式的数据，接下来通过object_detection_inference.py完成图像的预处理和推理，通过object_dectection_post_process.py处理推理结果，并将推理结果发送到presenter server。
-* 获取源码
-将https://gitee.com/Atlas200DK/sample-facedetection-python.git仓中的代码下载至所在Ubuntu服务器（UIHost）的任意目录，例如代码存放路径为：$HOME/ascend/sample- facedetection-python。
+请参考https://github.com/shanchenqi/object_detection/blob/master/README_cn.md
+完成代码的部署，下面将和大家分享关键代码及其逻辑结构
 
-* 安装环境依赖
-进入sample- facedetection-python/scrip目录，然后切换到root用户下，在终端执行
 
-bash install.sh <开发板ip地址> <外网ip> <内网ip>
-
-开发板ip地址： 开发板网口地址。使用usb连接时默认为192.168.1.2
-外网ip：UIHost连接Internet的网口IP
-内网ip：UIHost上和开发板连接的网口IP。在UIHost上使用ifconfig可以查看
-install.sh脚本执行的操作有：
-
-1.安装presenterserver依赖的python包；
-
-2.配置开发板和Ubuntu服务器网络，使开发板可以连接internet。Ubuntu服务器和开发板网络配置都需要在root账户下执行，所以在Ubuntu服务器上要切换到root账户执行install.sh脚本。并且在开发板侧install.sh脚本也会切换到root账户执行配置命令，切换时会提示用户输入开发板root账户密码，默认密码为"Mind@123"；
-
-3.升级和更新开发板的linux系统。为了安装依赖的python包，install.sh脚本会自动在开发板上执行命令apt-get update和apt-get upgrade。根据网络以及开发板是否已经执行过更新等状况，该步骤的执行时间可能会超过20分钟，并且期间安装询问交互，选Y即可；
-
-4.安装模型推理python包hiai,以及依赖的python-dev、numpy、pip、esasy_install、enum34、funcsigs、future等python包。因为numpy采用编译安装的方式，编译时间较长，所以安装时间会超过10分钟。并且安装过程中会出现安装询问交互，输入Y即可。
-注意：安装环境依赖只需要在 （1）第一次运行Object Detection样例 （2）采用全新制卡方式升级开发板后运行Object Detection样例 两种场景下执行。已经成功安装后不需要执行。
-## 部署
 ## 代码讲解
 1.objectdetectionapp中的graph.config文件：
 在模型的部署过程中，包括三个engine，这里我们称之为引擎：摄像头获取图片的引擎Mind_camera_datasets，推理的前处理引擎object_detection_inference，推理的后处理引擎object_detection_post_process。在graph.config配置文件中，含有这三个引擎的信息:引擎的id，引擎的名称，引擎的配置信息等。graph.config配置文件中还包括将这三个引擎串联起来需要的两个链接信息（connects），含有输入输出节点的ID等信息。
@@ -29,7 +9,7 @@ install.sh脚本执行的操作有：
     graphs {
       graph_id: 1875
       priority: 0
-
+     #一共有三个engines
     engines {
         id: 958
         engine_name: "Mind_camera_datasets"
@@ -40,19 +20,19 @@ install.sh脚本执行的操作有：
 
     engines {
         id: 244
-        engine_name: "face_detection_inference"
+        engine_name: "object_detection_inference"
         side: DEVICE
         ai_config {
         items {
             name: "model_path"
-            value: "../MyModel/face_detection.om"
+            value: "../MyModel/object_detection.om"
         }
         }
     }
 
     engines {
         id: 601
-        engine_name: "face_detection_post_process"
+        engine_name: "object_detection_post_process"
         side: HOST
 
         ai_config {
@@ -64,7 +44,7 @@ install.sh脚本执行的操作有：
         ******some items
         }
     }
-
+       #connects将engines连接起来
     connects {
         src_engine_id: 958
         src_port_id: 0
@@ -82,7 +62,8 @@ install.sh脚本执行的操作有：
 
 
 2.objectdetectionapp中的main.py:
-在main.py文件中将上述图文件中的各个引擎串联并通过faceDetectGraph.StartupEngines(engineList)启动。可在原程序代码中查看注释：https://gitee.com/Atlas200DK/sample-facedetection-python/blob/master/facedetectionapp/main.py：
+在main.py文件中将上述图文件中的各个引擎串联并通过objectDetectGraph.StartupEngines(engineList)启动。可在原程序代码中查看注释：https://github.com/shanchenqi/object_detection/blob/master/objectdetectionapp/main.py
+
 
 
 
@@ -160,7 +141,7 @@ ResizeImage()将图片进行resize，方法的定义如下
         for i in range(0, len(images)):
         #将YUV格式的数据转化为narray
             nArray = Yuv2Array(images[i])
-            ssd = {"name": "face_detection", "path": self.modelPath}
+            ssd = {"name": "object_detection", "path": self.modelPath}
         #将narray转化为tensor作为模型的输入   
             nntensor = hiai.NNTensor(nArray)
             tensorList = hiai.NNTensorList(nntensor)
@@ -176,7 +157,7 @@ ResizeImage()将图片进行resize，方法的定义如下
                     self.engine = hiai.Engine(self.engine_config)
                     self.ai_model_desc = hiai.AIModelDescription(name=ssd['name'], path=ssd['path'])
                     self.ai_config = hiai.AIConfig(hiai.AIConfigItem("Inference", "item_value_2"))
-                   # 在此处进行模型的推理分别定义输入，模型以及配置文件，完成推理
+                   # 在此处完成推理流程的编排
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
@@ -192,7 +173,7 @@ ResizeImage()将图片进行resize，方法的定义如下
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
-            在这里调用Graph.proc来获取推理得到的结果。
+            在这里调用Graph.proc进行推理得到的结果。
             resTensorList = self.graph.proc(input_nntensorlist=tensorList)
             result.append(resTensorList)
         return HIAI_APP_OK, result
@@ -215,9 +196,9 @@ ResizeImage()将图片进行resize，方法的定义如下
                 for k in range(0, inferenceResult.shape[2]):
                     result = inferenceResult[i][j][k]
                     attr = result[kAttributeIndex]   #1
-                    score = result[kScoreIndex] #face detection confidence  #2
+                    score = result[kScoreIndex] #object detection confidence  #2
                     
-                    #Get the face position in the image
+                    #Get the object position in the image
                     one_result = DetectionResult()
                     one_result.lt.x = result[kAnchorLeftTopAxisIndexX] * widthWithScale   #3
                     one_result.lt.y = result[kAnchorLeftTopAxisIndexY] * heightWithScale   #4
@@ -229,8 +210,8 @@ ResizeImage()将图片进行resize，方法的定义如下
                           score, one_result.lt.x, one_result.lt.y,one_result.rb.x, one_result.rb.y)
 
                     score_percent = score * kScorePercent
-                    #Construct the face detection confidence string
-                    one_result.result_text = kFaceLabelTextPrefix + str(score_percent) + kFaceLabelTextSuffix
+                    #Construct the object detection confidence string
+                    one_result.result_text = kobjectLabelTextPrefix + str(score_percent) + kobjectLabelTextSuffix
                     detectionResults.append(one_result)
-        #Send the face position, confidence string and image to presenter server
+        #Send the object position, confidence string and image to presenter server
         ret = SendImage(self.channel, jpegImageParam.imageId, jpegImageParam.imageData, detectionResults)
