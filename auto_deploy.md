@@ -97,24 +97,24 @@ Process函数是程序的入口，
 ResizeImage()将图片进行resize，方法的定义如下
 
     def ResizeImage(destImage, srcImageParam, modeResution,  isAligned = True):
-    srcImageC = image.CreateImageDataC(srcImageParam.imageId, srcImageParam.imageData)
-    modeResolutionC = image.CreateResolutionC(modeResution)
-    destImageC = image.ImageDataC()
-    ret = hiaiApp.ResizeImage(byref(destImageC), byref(modeResolutionC), byref(srcImageC), isAligned)
-    if ret != HIAI_APP_OK:
-        print("Resize image failed, return ", ret)
-        return HIAI_APP_ERROR
-      ##AlignUP()将图片的宽高转为合适的大小，宽为128的倍数，高为16的倍数。
-    if isAligned:
-        destImage.width = AlignUP(modeResolutionC.width, kVpcWidthAlign)
-        destImage.height = AlignUP(modeResolutionC.height, kVpcHeightAlign)
-    else:
-        destImage.width = modeResolutionC.width
-        destImage.height = modeResolutionC.height
-    destImage.size = destImageC.size
-    destImage.data = destImageC.data
+        srcImageC = image.CreateImageDataC(srcImageParam.imageId, srcImageParam.imageData)
+        modeResolutionC = image.CreateResolutionC(modeResution)
+        destImageC = image.ImageDataC()
+        ret = hiaiApp.ResizeImage(byref(destImageC), byref(modeResolutionC), byref(srcImageC), isAligned)
+        if ret != HIAI_APP_OK:
+            print("Resize image failed, return ", ret)
+            return HIAI_APP_ERROR
+        ##AlignUP()将图片的宽高转为合适的大小，宽为128的倍数，高为16的倍数。
+        if isAligned:
+            destImage.width = AlignUP(modeResolutionC.width, kVpcWidthAlign)
+            destImage.height = AlignUP(modeResolutionC.height, kVpcHeightAlign)
+        else:
+            destImage.width = modeResolutionC.width
+            destImage.height = modeResolutionC.height
+        destImage.size = destImageC.size
+        destImage.data = destImageC.data
 
-    return HIAI_APP_OK
+        return HIAI_APP_OK
 
 
 接下来，ConvImageOfFrameToJpeg方法将视频的YUV数据转化为jpeg格式，通过将EngineTrans类实例化，存储图片的信息发送给后处理引擎，将模型的推理结果展现在presenterserver中。
