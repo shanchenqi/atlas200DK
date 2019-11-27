@@ -117,7 +117,7 @@ ResizeImage()将图片进行resize，方法的定义如下
         return HIAI_APP_OK
 
 
-接下来，ConvImageOfFrameToJpeg方法将视频的YUV数据转化为jpeg格式，通过将EngineTrans类实例化，存储图片的信息发送给后处理引擎，将模型的推理结果展现在presenterserver中。
+接下来，ConvImageOfFrameToJpeg方法将视频的YUV数据转化为jpeg格式，通过将EngineTrans类实例化，存储图片的信息发送给后处理引擎，将原始图片展现在presenterserver中。
 
     def ConvertImageYuvToJpeg(destImageParam, srcImageParam):
             srcImageC = image.CreateImageDataC(srcImageParam.imageId, srcImageParam.imageData)
