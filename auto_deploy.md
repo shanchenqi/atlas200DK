@@ -120,20 +120,20 @@ ResizeImage()将图片进行resize，方法的定义如下
 接下来，ConvImageOfFrameToJpeg方法将视频的YUV数据转化为jpeg格式，通过将EngineTrans类实例化，存储图片的信息发送给后处理引擎，将模型的推理结果展现在presenterserver中。
 
     def ConvertImageYuvToJpeg(destImageParam, srcImageParam):
-        srcImageC = image.CreateImageDataC(srcImageParam.imageId, srcImageParam.imageData)
-    destImageC = image.ImageDataC()
-       #hiaiApp.ConvertImageToJpeg调用Atlas200DK上的hiaiApp模块，完成图片的转化
-    
-        ret = hiaiApp.ConvertImageToJpeg(byref(destImageC), byref(srcImageC))
-        if ret != HIAI_APP_OK:
-            print("Convert image failed!")
-            return HIAI_APP_ERROR
+            srcImageC = image.CreateImageDataC(srcImageParam.imageId, srcImageParam.imageData)
+        destImageC = image.ImageDataC()
+        #hiaiApp.ConvertImageToJpeg调用Atlas200DK上的hiaiApp模块，完成图片的转化
+        
+            ret = hiaiApp.ConvertImageToJpeg(byref(destImageC), byref(srcImageC))
+            if ret != HIAI_APP_OK:
+                print("Convert image failed!")
+                return HIAI_APP_ERROR
 
-        destImageParam.imageId = srcImageParam.imageId
-        destImageParam.imageData.width = srcImageParam.imageData.width
-        destImageParam.imageData.height = srcImageParam.imageData.height
-        destImageParam.imageData.size = destImageC.size
-        destImageParam.imageData.data = destImageC.data
+            destImageParam.imageId = srcImageParam.imageId
+            destImageParam.imageData.width = srcImageParam.imageData.width
+            destImageParam.imageData.height = srcImageParam.imageData.height
+            destImageParam.imageData.size = destImageC.size
+            destImageParam.imageData.data = destImageC.data
 最后调用ExcuteInference方法完成图片的推理，再推理的过程中，通过YUV2Array函数将原始的图片转化为一个narray，通过Atlas200DK的hiai模块，完成图片的推理，将推理结果和原始图片共同发送到最后的后处理引擎中。具体的代码如下：
      
      def ExcuteInference(self, images):
