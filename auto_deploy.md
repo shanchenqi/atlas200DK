@@ -134,7 +134,7 @@ ResizeImage()将图片进行resize，方法的定义如下
             destImageParam.imageData.height = srcImageParam.imageData.height
             destImageParam.imageData.size = destImageC.size
             destImageParam.imageData.data = destImageC.data
-最后调用ExcuteInference方法完成图片的推理，再推理的过程中，通过YUV2Array函数将原始的图片转化为一个narray，通过Atlas200DK的hiai模块，完成图片的推理，将推理结果和原始图片共同发送到最后的后处理引擎中。具体的代码如下：
+最后调用ExcuteInference方法完成图片的推理，再推理的过程中，通过YUV2Array函数将原始的图片转化为一个narray，通过调用Graph.proc接口，完成图片的推理，将推理结果和原始图片共同发送到最后的后处理引擎中。具体的代码如下：
      
      def ExcuteInference(self, images):
         result = []
@@ -173,13 +173,13 @@ ResizeImage()将图片进行resize，方法的定义如下
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
-            在这里调用Graph.proc进行推理得到的结果。
+            在这里调用Graph.proc进行推理，得到的结果存储在resTensorList中。
             resTensorList = self.graph.proc(input_nntensorlist=tensorList)
             result.append(resTensorList)
         return HIAI_APP_OK, result
 
 5.objectdetectionapp中的object_post_process.py:
-在后处理引擎中,首先判断是否有推理结果，如果没有推理结果，则调用HandleOriginalImage方法直接将原始图片发送到服务中。如果有推理结果，则调用HandelResults方法处理推理结果。模型的推理结果是一个size为(200,1,1,7)的tensor，其中的200表示模型会将推理结果中的top200输出，7维数据中的result[1]表示推理结果的标签id，result[2]表示置信度，result[3-6]表示识别出物体的box的坐标，将这些结果处理好发送到presenter server中进行结果的展示。
+在后处理引擎中,首先判断是否有推理结果，如果没有推理结果，则调用HandleOriginalImage方法直接将原始图片发送到presenter server中。如果有推理结果，则调用HandelResults方法处理推理结果。模型的推理结果是一个size为(200,1,1,7)的nnTensor，其中的200表示模型会将推理结果中的top200输出，7维数据中的result[1]表示推理结果的标签id，result[2]表示置信度，result[3-6]表示识别出物体的box的坐标，将这些结果处理好发送到presenter server中进行结果的展示。
 
 
     def HandleResults(self, inferenceData):
