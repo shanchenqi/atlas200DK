@@ -39,7 +39,9 @@ AI引擎：Caffe，Caffe-1.0.0-python2.7
 ### 3.查看训练作业结果
 
 此时点开日志，可以通过日志完成查看模型的性能。在训练作业完成后，模型存在obs中的输出位置。输出一共四个文件：
-1.deploy.prototxt：训练生成的模型文件2.VGG_VOC0712_SSD_300x300_iter_50.caffemodel：训练生成的参数文件
-3.aipp.config文件：模型转换的配置文件，会调度ascend芯片的最佳性能
-4.opmap文件，在模型转换是存在一个不支持的算子，才此文件中将其进行替代，使模型转换成功。
+
+1. deploy.prototxt：训练生成的模型文件
+2. VGG_VOC0712_SSD_300x300_iter_50.caffemodel：训练生成的参数文件
+3. aipp.config文件：模型转换的配置文件，会调度ascend芯片的最佳性能
+4. opmap文件，在模型转换是存在一个不支持的算子，才此文件中将其进行替代，使模型转换成功。
 
