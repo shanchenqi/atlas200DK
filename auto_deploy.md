@@ -173,7 +173,7 @@ ResizeImage()将图片进行resize，方法的定义如下
                     final_result = self.engine.inference(input_tensor_list=tensorList,
                                                 ai_model=self.ai_model_desc,
                                                 ai_config=self.ai_config)
-            在这里调用Graph.proc进行推理，得到的结果存储在resTensorList中。
+       #     在这里调用Graph.proc进行推理，得到的结果存储在resTensorList中。
             resTensorList = self.graph.proc(input_nntensorlist=tensorList)
             result.append(resTensorList)
         return HIAI_APP_OK, result
