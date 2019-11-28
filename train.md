@@ -4,8 +4,9 @@
 <img src="https://github.com/huaweicloud/ModelArts-Lab/blob/master/train_inference/image_recognition/images/%E6%B7%BB%E5%8A%A0%E8%AE%BF%E9%97%AE%E7%A7%98%E9%92%A5.PNG" width="800px" />
 
 ### 2.修改训练代码
+请将obs/scrip/train-caffe-ssd1023zhong
 1. 请将obs://3377/中的文件拷贝至自己的桶中,命名为“bucketname”;
-2. 将obs://bucketname/
+2. 将obs://bucketname/scrip/train-caffe-ssd1023下载至本地，打开文件，将第5行bucketname='***'更新为自己的bucketname，再将train-caffe-ssd1023传回obs桶中，此文件为训练脚本。
 ### 3.创建训练作业
 在ModelArts“训练作业”界面，单击“创建”按钮，进入创建训练作业页面。按照如下指导填写字段：
 
